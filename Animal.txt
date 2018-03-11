@@ -1,0 +1,38 @@
+USE [Zoo]
+GO
+
+ Object  Table [dbo].[ANIMAL]    Script Date 3112018 41942 PM 
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ANIMAL](
+	[ID] [int] NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Species] [nvarchar](50) NULL,
+	[Taxology] [nvarchar](50) NULL,
+	[Birth Location] [nvarchar](50) NULL,
+	[Birth Date] [date] NULL,
+	[Status] [nchar](10) NULL,
+	[Status Date] [date] NULL,
+	[Health] [nvarchar](50) NULL,
+	[Gender] [bit] NULL,
+	[Height] [decimal](18, 0) NULL,
+	[Weight] [decimal](18, 0) NULL,
+	[Attraction] [int] NULL,
+ CONSTRAINT [PK_Animal] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ANIMAL]  WITH CHECK ADD  CONSTRAINT [FK_AnimalHomeID] FOREIGN KEY([Attraction])
+REFERENCES [dbo].[ATTRACTION] ([ID])
+GO
+
+ALTER TABLE [dbo].[ANIMAL] CHECK CONSTRAINT [FK_AnimalHomeID]
+GO
+

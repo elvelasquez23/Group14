@@ -1,0 +1,31 @@
+USE [Zoo]
+GO
+
+/****** Object:  Table [dbo].[EMPLOYEE]    Script Date: 3/11/2018 4:20:37 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[EMPLOYEE](
+	[Fname] [varchar](15) NOT NULL,
+	[Mname] [varchar](15) NULL,
+	[Lname] [varchar](15) NOT NULL,
+	[ID] [int] NOT NULL,
+	[Title] [varchar](30) NULL,
+	[Hire_Date] [date] NULL,
+	[Street] [varchar](25) NULL,
+	[City] [varchar](10) NULL,
+	[Zip] [varchar](5) NULL,
+	[State] [varchar](20) NULL,
+	[Email] [varchar](30) NULL,
+	[Phone#] [int] NULL,
+	[Gender] [char](1) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
