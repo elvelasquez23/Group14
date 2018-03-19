@@ -1,0 +1,149 @@
+CREATE TABLE EMPLOYEE(
+	ID				    int PRIMARY KEY,
+	Fname			    nvarchar(15) NOT NULL,
+	Minit			    nchar(1) NULL,
+	Lname			    nvarchar(15) NOT NULL,
+	Gender		    nvarchar(5) NULL,
+	Street		    nvarchar(25) NULL,
+	City			    nvarchar(10) NULL,
+	Zip				    nvarchar(5) NULL,
+	[State]		    nvarchar(20) NULL,
+	Email			    nvarchar(30) NULL,
+	Phone#		    bigint NULL, --made it bigint to fit all phone numbers. i came accross an error with sample data of phone numbers too "large"
+	Title			    nvarchar(30) NULL,
+	HireDate		  date NULL,
+	StoreID			  int, --FK
+	AttractionID  int,	--FK
+	
+	CHECK(Gender IN('M', 'F', 'Other')) --We can remove Other just wanted to be inclusive LOL
+);
+
+
+CREATE TABLE CUSTOMER(
+	ID				      int PRIMARY KEY,
+	Fname			      nvarchar(30) NOT NULL,
+	Minit			      nchar(1) NULL,
+	Lname			      nvarchar(30) NOT NULL,
+	Street			    nvarchar(50) NOT NULL,
+	City			      nvarchar(30) NOT NULL,
+	Zip				      int NOT NULL,
+	[State]			    nvarchar(20) NOT NULL,
+	Email			      nvarchar(50) NULL,
+	Phone			      nvarchar(20) NOT NULL,
+	MembershipType	nvarchar(20) NOT NULL,
+	ExpirationDate	date NOT NULL,
+
+	CHECK(MembershipType IN('Standard', 'Individual Plus', 'Senior', 'Family', 'Family Plus', 'Family Premium', 'Sustaining', 'Conservator'))
+  --My only concern with this is if we add another type of membership how could we modify this ^
+);
+
+
+CREATE TABLE STORE(
+	ID				    int PRIMARY KEY,
+	[Name]		  	nvarchar(25) UNIQUE,
+	[Type]			  nvarchar(15) NOT NULL,
+	ManagerID		  int, --FK
+	ManagerDate		date NULL,
+
+	CHECK([Type] IN('Ticket Booth', 'Gift Shop', 'Restaurant'))
+);
+
+
+CREATE TABLE ATTRACTION(
+	ID					int PRIMARY KEY,
+	[Name]				nvarchar(30) UNIQUE  NOT NULL,
+	IsOpen				nchar(1) NULL,
+	OpenedClosedDate	date NULL,
+	Condition			nvarchar(50) NULL,
+	OpenTime			time NULL,--I'll leave these here bc i see the value for a zooDb although i agree they are probably not necessary for our project
+	CloseTime			time NULL,
+	[Days]				nvarchar(20) NULL,--If we do keep Days/Times. I would suggest a schedule table to control variable time on variable days. But again not necessary.
+	ManagerDate			date NULL,
+	ManagerID			int, --FK
+	
+	CHECK(IsOpen IN('Y', 'N'))
+);
+
+
+CREATE TABLE ANIMAL(
+	ID				      int PRIMARY KEY,
+	[Name]			    nvarchar(50) NOT NULL,
+	Species			    nvarchar(50) NULL,
+	Taxology		    nvarchar(50) NULL,
+	Origin			    nvarchar(50) NULL,
+	BirthDate		    date NULL,
+	Gender			    nchar(1) NULL,
+	Height			    decimal(18, 2) NULL,
+	[Weight]		    decimal(18, 2) NULL,
+	Health			    nvarchar(50) NULL,
+	Deceased		    nchar(1) NULL,
+	DeathDate		    date NULL,
+	TransferInDate	date NULL,
+	TransferOutDate	date NULL,
+	AttractionID	  int NULL, --FK
+	MotherID		    int REFERENCES ANIMAL(ID),--addeed these two because i thought it would be cool if we could do some family search algorithm
+	FatherID		    int REFERENCES ANIMAL(ID),
+  
+  --I was considering adding diet but nah. it wont be hard to implement tho.
+	
+	CHECK(Deceased IN('Y', 'N')),
+	CHECK(Gender IN('M', 'F'))
+);
+
+
+CREATE TABLE PURCHASE(
+	ReceiptNum	int PRIMARY KEY,
+	Amount		decimal NOT NULL,
+	PayOption	nvarchar(20) NOT NULL,
+	[DateTime]	datetime NOT NULL,
+	StoreID		int NULL, --FK
+	CustomerID	int NULL, --FK
+
+	CHECK(PayOption IN('Credit Card', 'Debit Card', 'Cash'))
+);
+
+CREATE TABLE PRODUCT(
+	ID				int PRIMARY KEY,
+	[Name]			nvarchar(15),
+	[Description]	nvarchar(30),
+	Quantity		int,
+	OnOrder			int,
+	Price			decimal NOT NULL,
+);
+
+
+CREATE TABLE PURCHASE_INFO(
+	ReceiptNum	int, --FK
+ 	ProductID	int, --FK
+	Quantity	int NULL,
+	Price		decimal NOT NULL,
+	
+	PRIMARY KEY(ReceiptNum, ProductID) 
+);
+
+--Alterations/ForeignKeys--
+ALTER TABLE EMPLOYEE
+ADD CONSTRAINT [FK_StoreIdEmployee] FOREIGN KEY(StoreID) REFERENCES STORE(ID);
+ALTER TABLE EMPLOYEE
+ADD CONSTRAINT [FK_AttractionIdEmployee] FOREIGN KEY(AttractionID) REFERENCES ATTRACTION(ID);
+
+ALTER TABLE STORE
+ADD CONSTRAINT [FK_ManagerIdStore] FOREIGN KEY(ManagerID) REFERENCES EMPLOYEE(ID);
+
+ALTER TABLE ATTRACTION
+ADD CONSTRAINT [FK_ManagerIdAttraction] FOREIGN KEY(ManagerID) REFERENCES EMPLOYEE(ID);
+
+ALTER TABLE ANIMAL
+ADD CONSTRAINT [FK_AttractionIdAnimal] FOREIGN KEY(AttractionID) REFERENCES ATTRACTION(ID);
+
+ALTER TABLE PURCHASE
+ADD CONSTRAINT [FK_StoreIdPurchase] FOREIGN KEY(StoreID) REFERENCES STORE(ID);
+
+ALTER TABLE PURCHASE
+ADD CONSTRAINT [FK_CustomerIdPurchase] FOREIGN KEY(CustomerID) REFERENCES CUSTOMER(ID);
+
+ALTER TABLE PURCHASE_INFO
+ADD CONSTRAINT [FK_ReceiptNumPurchaseInfo] FOREIGN KEY(ReceiptNum) REFERENCES PURCHASE(ReceiptNum);
+
+ALTER TABLE PURCHASE_INFO
+ADD CONSTRAINT [FK_IdPurchaseInfo] FOREIGN KEY(ProductID) REFERENCES PRODUCT(ID);
